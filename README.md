@@ -1,51 +1,117 @@
-# Symfony Docker
+# **Symfony Discount API**
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
+## **Overview**
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+This project is a Symfony-based API that enables querying products with relevant discount information. The application is designed with a **hexagonal architecture** to ensure flexibility and separation of concerns. It adheres to **SOLID principles** and includes **unit tests** to ensure high code quality and maintainability.
 
-## Getting Started
+The project leverages the **Symfony Docker** repository as its base, providing an optimized development environment using Docker. A pre-configured MySQL database is automatically populated upon setup, containing data for products, categories, and discounts.
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --no-cache` to build fresh images
-3. Run `docker compose up --pull always -d --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+---
 
-## Features
+## **Features**
 
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
+- **Product Querying**: Retrieve products with optional filters for category and price.
+- **Discount Calculation**: Automatically applies the best discount for each product, either by category or SKU.
+- **Hexagonal Architecture**: Clear separation of business logic, adapters, and application layers.
+- **SOLID Principles**: Ensures code is modular, maintainable, and extensible.
+- **Unit Testing**: Validates critical components, ensuring the system works as expected.
 
-**Enjoy!**
+---
 
-## Docs
+## **Setup**
 
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+To set up and run the project, execute the `setup.sh` script located in the project root directory. This script initializes the Docker containers, sets up the Symfony environment, and populates the MySQL database.
 
-## License
+```bash
+./setup.sh
+```
 
-Symfony Docker is available under the MIT License.
+Once the setup is complete, the API will be available locally at:  
+[https://localhost](https://localhost)
 
-## Credits
+---
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+## **Usage**
+
+### **Endpoint: GET /products**
+
+Retrieve products with optional filters for category and maximum price.
+
+#### **Query Parameters**
+
+| Parameter       | Type     | Description                                           |
+|------------------|----------|-------------------------------------------------------|
+| `category`       | `string` | Filter by product category (e.g., `boots`).           |
+| `priceLessThan`  | `number` | Filter products with a price lower than the specified value. |
+
+#### **Example Request**
+
+```bash
+https://localhost/products?category=boots&priceLessThan=75000
+```
+
+#### **Example Response**
+
+```json
+[
+  {
+    "sku": "000003",
+    "name": "Ashlington leather ankle boots",
+    "category": "boots",
+    "price": {
+      "original": 71000,
+      "final": 49700,
+      "discount_percentage": "30%",
+      "currency": "EUR"
+    }
+  }
+]
+```
+
+---
+
+## **Database Structure**
+
+The MySQL database consists of three tables designed for optimal data storage and handling:
+
+1. **Products**:
+    - Stores product information (e.g., SKU, name, price, and category).
+2. **Categories**:
+    - Stores category information, including any associated discount percentages.
+3. **Discounts**:
+    - Stores SKU-specific discounts.
+
+The database is populated automatically during the setup process.
+
+---
+
+## **Architecture**
+
+The project follows a **hexagonal architecture**:
+- **Domain Layer**: Core business logic (e.g., discount calculations).
+- **Application Layer**: Handles use cases, such as retrieving products.
+- **Infrastructure Layer**: Interfaces with external systems (e.g., database, HTTP).
+
+This architecture ensures:
+- Clear separation of concerns.
+- Easy testability.
+- Flexibility to change adapters (e.g., switch from MySQL to another database) without affecting core business logic.
+
+---
+
+## **Testing**
+
+Unit tests are included to validate the critical components of the system. To run the tests, access the project container and run the following command:
+
+```bash
+./vendor/bin/phpunit
+```
+
+---
+
+## **Development Notes**
+
+- **Base Repository**: The project is based on [Dunglas Symfony Docker](https://github.com/dunglas/symfony-docker).
+- **Automated Setup**: The `setup.sh` script ensures quick and consistent setup.
+- **Local HTTPS**: The API is served locally over HTTPS for secure communication.
+

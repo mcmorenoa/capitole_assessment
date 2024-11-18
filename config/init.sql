@@ -37,3 +37,5 @@ VALUES ('000001', 'BV Lean leather ankle boots', 1, 89000),
        ('000003', 'Ashlington leather ankle boots', 1, 71000),
        ('000004', 'Naima embellished suede sandals', 2, 79500),
        ('000005', 'Nathane leather sneakers', 3, 59000);
+
+INSERT INTO product_discount (sku, discount) VALUES ('000003', 15);

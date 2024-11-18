@@ -109,6 +109,61 @@ Unit tests are included to validate the critical components of the system. To ru
 
 ---
 
+## **Troubleshooting**
+
+### **1. MySQL Port Already in Use**
+
+If the MySQL port (`3306`) is already in use on your machine, follow these steps to change it:
+
+1. **Edit the Docker Compose File**:
+   Open the `compose.yml` and modify the `ports` section for the MySQL service:
+   ```yaml
+   services:
+     database:
+       ports:
+         - "{newPortHere}:3306"
+   ```
+
+   You will need to change ports also in
+    ```yaml
+   services:
+     php:
+       environment:
+            DATABASE_URL: mysql://mcmoreno:mcmoreno@database:{newPortHere}/capitole_assessment?serverVersion=8&charset=utf8mb4
+
+   ```
+3. **Rebuild the Docker Containers**:
+   Run the following commands to apply the changes:
+   ```bash
+   docker-compose down
+   docker-compose up -d --build
+   ```
+
+4. **Update Environment Variables**:
+   Modify the `DATABASE_URL` in your `.env` file to reflect the new port:
+   ```dotenv
+   DATABASE_URL=mysql://mcmoreno:mcmoreno@database:{newPortHere}/capitole_assessment?serverVersion=8&charset=utf8mb4
+   ```
+
+5. Restart the project:
+   ```bash
+   ./setup.sh
+   ```
+
+---
+
+### **2. Security Alert When Accessing `https://localhost`**
+
+When accessing `https://localhost`, modern browsers like Google Chrome might display a security warning because the SSL certificate is self-signed. To proceed:
+
+1. **Google Chrome**:
+   - Click on **"Advanced"** in the warning message.
+   - Select **"Proceed to localhost (unsafe)"**.
+
+2. **Firefox**:
+   - Click on **"Advanced"**.
+   - Click **"Accept the Risk and Continue"**.
+     
 ## **Development Notes**
 
 - **Base Repository**: The project is based on [Dunglas Symfony Docker](https://github.com/dunglas/symfony-docker).

@@ -6,7 +6,7 @@ docker-compose build --no-cache
 
 # Start Docker containers with --pull always, detached mode, and wait for them to be ready
 echo "Starting Docker containers..."
-docker-compose up --pull always -d --wait
+docker-compose up -d
 
 # Show the link to localhost
 echo "Docker containers are up. Visit https://localhost to view your application."
